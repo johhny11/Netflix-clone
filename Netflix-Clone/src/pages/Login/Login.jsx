@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./Login.css";
-import logo from "../../assets/logo.png";
 import { login, signup } from "../../Firebase";
 
 const Login = () => {
@@ -21,7 +20,7 @@ const Login = () => {
 
   return (
     <div className="login">
-      <img src={logo} alt="" className="login-logo" />
+      <div className="login-logo">Thriller</div>
       <div className="login-form">
         <h1>{signState}</h1>
         <form action="">
@@ -67,7 +66,7 @@ const Login = () => {
         <div className="form-switch">
           {signState === "Sign In" ? (
             <p>
-              New to Netflix?{" "}
+              New to Thriller?{" "}
               <span
                 onClick={() => {
                   setSignState("Sign Up");

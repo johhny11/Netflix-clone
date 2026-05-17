@@ -4,8 +4,12 @@
     url(/background_banner.jpg);
   padding: 20px 8%;
 }
-.login logo {
-  width: 150px;
+.login-logo {
+  color: #e50914;
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
 }
 .login-form {
   width: 100%;

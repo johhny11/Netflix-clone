@@ -18,8 +18,12 @@
   align-items: center;
   gap: 50px;
 }
-.navbar-left img {
-  width: 90px;
+.brand-logo {
+  color: #e50914;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
 }
 .navbar-left ul {
   display: flex;
