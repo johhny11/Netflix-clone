@@ -1,21 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./TitleCards.css";
-import cards_data from "../../assets/cards/Cards_data";
 import { Link } from "react-router-dom";
+import { getBackdropUrl, getMovieList } from "../../services/tmdb";
 
 const TitleCards = ({ title, category }) => {
   const [apiData, setApiData] = useState([]);
+  const [error, setError] = useState("");
 
   const cardsRef = useRef();
-
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlM2NiMzI3Y2Q2OGJmMjQ2YjlkZTJiOTA2M2JlOTJmMyIsIm5iZiI6MTc0MTQ2MzM4Ny40MTEsInN1YiI6IjY3Y2M5ZjViMmZlNzFiOGM0NWY1YjE3OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJ7qmekF1ZZOaGiJ4OUtiaAWJ9I07fFQMOSMG3gDc8",
-    },
-  };
 
   const handleWheel = (event) => {
     event.preventDefault();
@@ -23,28 +15,39 @@ const TitleCards = ({ title, category }) => {
   };
 
   useEffect(() => {
-    fetch(
-      `https://api.themoviedb.org/3/movie/${
-        category ? category : "now_playing"
-      }?language=en-US&page=1`,
-      options
-    )
-      .then((res) => res.json())
-      .then((res) => setApiData(res.results))
-      .catch((err) => console.error(err));
-    cardsRef.current.addEventListener("wheel", handleWheel);
-  }, []);
+    const controller = new AbortController();
+    const currentCardsRef = cardsRef.current;
+
+    getMovieList(category, { signal: controller.signal })
+      .then((res) => {
+        setApiData(res.results || []);
+        setError("");
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
+      });
+
+    currentCardsRef.addEventListener("wheel", handleWheel);
+
+    return () => {
+      controller.abort();
+      currentCardsRef.removeEventListener("wheel", handleWheel);
+    };
+  }, [category]);
 
   return (
     <div className="title-cards">
       <h2>{title ? title : "Popular on Netflix"}</h2>
+      {error && <p className="cards-message">{error}</p>}
       <div className="card-list" ref={cardsRef}>
         {apiData.map((card, index) => {
           return (
             <Link to={`/player/${card.id}`} className="card" key={index}>
               <img
-                src={`https://image.tmdb.org/t/p/w780` + card.backdrop_path}
-                alt=""
+                src={getBackdropUrl(card.backdrop_path)}
+                alt={card.title || card.original_title}
               />
               <p>{card.original_title}</p>
             </Link>

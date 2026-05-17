@@ -15,6 +15,10 @@
 .player iframe {
   border-radius: 10px;
 }
+.player-message {
+  color: #b3b3b3;
+  font-size: 18px;
+}
 
 .player-info {
   display: flex;
