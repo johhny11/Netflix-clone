@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
-import hero_banner from "../../assets/hero_banner.jpg";
-import hero_title from "../../assets/hero_title.png";
 import play_icon from "../../assets/play_icon.png";
 import info_icon from "../../assets/info_icon.png";
 import TitleCards from "../../components/TitleCards/TitleCards";
 import Footer from "../../components/Footer/Footer";
 import { Link } from "react-router-dom";
-import { getBackdropUrl, getPosterUrl, searchMovies } from "../../services/tmdb";
+import { getBackdropUrl, getPosterUrl, getTrendingAll, searchMovies } from "../../services/tmdb";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,6 +14,8 @@ const Home = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [showAllResults, setShowAllResults] = useState(false);
+  const [heroTitles, setHeroTitles] = useState([]);
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
 
   useEffect(() => {
     const query = searchQuery.trim();
@@ -57,7 +57,51 @@ const Home = () => {
     };
   }, [searchQuery]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    getTrendingAll({ signal: controller.signal })
+      .then((res) => {
+        const trendingTitles = (res.results || []).filter((title) => {
+          return (
+            (title.media_type === "movie" || title.media_type === "tv") &&
+            title.backdrop_path &&
+            title.overview
+          );
+        });
+
+        setHeroTitles(trendingTitles.slice(0, 8));
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error(err);
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (heroTitles.length <= 1) {
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      setActiveHeroIndex((currentIndex) => (currentIndex + 1) % heroTitles.length);
+    }, 6000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [heroTitles.length]);
+
   const hasSearchQuery = searchQuery.trim().length >= 2;
+  const activeHero = heroTitles[activeHeroIndex];
+  const activeHeroName =
+    activeHero?.title || activeHero?.name || activeHero?.original_title || activeHero?.original_name;
+  const activeHeroMediaType = activeHero?.media_type === "tv" ? "tv" : "movie";
 
   return (
     <div className="home">
@@ -72,23 +116,45 @@ const Home = () => {
       />
       {!showAllResults && (
         <div className="hero">
-          <img src={hero_banner} alt="" className="banner-img" />
+          {activeHero && (
+            <img
+              src={getBackdropUrl(activeHero.backdrop_path, "original")}
+              alt={activeHeroName}
+              className="banner-img"
+            />
+          )}
+          {!activeHero && <div className="banner-img hero-loading" />}
           <div className="hero-caption">
-            <img src={hero_title} alt="" className="caption-img" />
-            <p>
-              Discovering his ties to a secret ancient order, a young man living
-              in modern Istanbul embarks on a quest to save the city from an
-              immortal enemy.
-            </p>
+            <span className="hero-kicker">Trending Now</span>
+            <h1>{activeHeroName || "Loading trending titles..."}</h1>
+            <p>{activeHero?.overview || "Fetching this week's most watched movies and shows."}</p>
             <div className="hero-btns">
-              <button className="btn">
+              <Link
+                to={
+                  activeHero
+                    ? `/player/${activeHeroMediaType}/${activeHero.id}`
+                    : "/"
+                }
+                className="btn"
+              >
                 <img src={play_icon} alt="" />
                 Play
-              </button>
+              </Link>
               <button className="btn dark-btn">
                 <img src={info_icon} alt="" />
                 More Info
               </button>
+            </div>
+            <div className="hero-dots" aria-label="Trending carousel position">
+              {heroTitles.map((title, index) => (
+                <button
+                  type="button"
+                  className={index === activeHeroIndex ? "active" : ""}
+                  onClick={() => setActiveHeroIndex(index)}
+                  aria-label={`Show ${title.title || title.name}`}
+                  key={`${title.media_type}-${title.id}`}
+                />
+              ))}
             </div>
             <TitleCards />
           </div>
@@ -108,7 +174,7 @@ const Home = () => {
                 getBackdropUrl(movie.backdrop_path) || getPosterUrl(movie.poster_path);
 
               return (
-                <Link to={`/player/${movie.id}`} className="search-card" key={movie.id}>
+                <Link to={`/player/movie/${movie.id}`} className="search-card" key={movie.id}>
                   {imageUrl ? (
                     <img src={imageUrl} alt={movie.title || movie.original_title} />
                   ) : (

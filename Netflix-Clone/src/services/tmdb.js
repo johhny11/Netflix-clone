@@ -38,6 +38,18 @@ export const getMovieList = (category = "now_playing", options) => {
   return request(`/movie/${category}`, { language: "en-US", page: 1 }, options);
 };
 
+export const getTvList = (category = "popular", options) => {
+  return request(`/tv/${category}`, { language: "en-US", page: 1 }, options);
+};
+
+export const getTrendingMovies = (options) => {
+  return request("/trending/movie/week", { language: "en-US" }, options);
+};
+
+export const getTrendingAll = (options) => {
+  return request("/trending/all/week", { language: "en-US" }, options);
+};
+
 export const searchMovies = (query, options) => {
   return request(
     "/search/movie",
@@ -53,6 +65,12 @@ export const searchMovies = (query, options) => {
 
 export const getMovieVideos = (id, options) => {
   return request(`/movie/${id}/videos`, { language: "en-US" }, options);
+};
+
+export const getVideos = (mediaType, id, options) => {
+  const type = mediaType === "tv" ? "tv" : "movie";
+
+  return request(`/${type}/${id}/videos`, { language: "en-US" }, options);
 };
 
 export const getBackdropUrl = (path, size = "w780") => {

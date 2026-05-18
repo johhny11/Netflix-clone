@@ -1,0 +1,71 @@
+.browse-page {
+  min-height: 100vh;
+  background: #000;
+}
+
+.browse-content {
+  padding: 110px 6% 60px;
+}
+
+.browse-content h1 {
+  max-width: 1200px;
+  margin: 0 auto 22px;
+  font-size: 34px;
+  font-weight: 600;
+}
+
+.browse-message {
+  max-width: 1200px;
+  margin: 0 auto 18px;
+  color: #b3b3b3;
+}
+
+.browse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.browse-card {
+  overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  background: #181818;
+  border-radius: 4px;
+}
+
+.browse-card img,
+.browse-card-placeholder {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #2f2f2f;
+}
+
+.browse-card-placeholder {
+  display: grid;
+  place-items: center;
+  color: #b3b3b3;
+}
+
+.browse-card div:last-child {
+  padding: 10px;
+}
+
+.browse-card h2 {
+  overflow: hidden;
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browse-card p {
+  color: #b3b3b3;
+  font-size: 13px;
+}

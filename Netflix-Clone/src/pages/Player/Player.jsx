@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./Player.css";
 import back_arrow_icon from "../../assets/back_arrow_icon.png";
 import { useNavigate, useParams } from "react-router-dom";
-import { getMovieVideos } from "../../services/tmdb";
+import { getVideos } from "../../services/tmdb";
 
 const Player = () => {
-  const { id } = useParams();
+  const { id, mediaType = "movie" } = useParams();
 
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ const Player = () => {
   useEffect(() => {
     const controller = new AbortController();
 
-    getMovieVideos(id, { signal: controller.signal })
+    getVideos(mediaType, id, { signal: controller.signal })
       .then((response) => {
         const videos = response.results || [];
         const trailer =
@@ -38,7 +38,7 @@ const Player = () => {
     return () => {
       controller.abort();
     };
-  }, [id]);
+  }, [id, mediaType]);
 
   return (
     <div className="player">
@@ -59,7 +59,7 @@ const Player = () => {
           allowFullScreen
         ></iframe>
       ) : (
-        <p className="player-message">No trailer available for this movie.</p>
+        <p className="player-message">No trailer available for this title.</p>
       )}
       <div className="player-info">
         <p>{apiData.published_at?.slice(0, 10)}</p>

@@ -44,7 +44,7 @@ const TitleCards = ({ title, category }) => {
       <div className="card-list" ref={cardsRef}>
         {apiData.map((card, index) => {
           return (
-            <Link to={`/player/${card.id}`} className="card" key={index}>
+            <Link to={`/player/movie/${card.id}`} className="card" key={index}>
               <img
                 src={getBackdropUrl(card.backdrop_path)}
                 alt={card.title || card.original_title}

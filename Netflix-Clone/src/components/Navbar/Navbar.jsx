@@ -9,13 +9,13 @@ import { Link } from "react-router-dom";
 import { getPosterUrl } from "../../services/tmdb";
 
 const Navbar = ({
-  searchQuery,
-  onSearchChange,
-  searchResults,
-  isSearching,
-  searchError,
-  showSearchDropdown,
-  onSeeAll,
+  searchQuery = "",
+  onSearchChange = () => {},
+  searchResults = [],
+  isSearching = false,
+  searchError = "",
+  showSearchDropdown = false,
+  onSeeAll = () => {},
 }) => {
   const navRef = useRef();
   const previewResults = searchResults.slice(0, 5);
@@ -43,12 +43,20 @@ const Navbar = ({
   return (
     <div ref={navRef} className="navbar">
       <div className="navbar-left">
-        <span className="brand-logo">Thriller</span>
+        <Link to="/" className="brand-logo">Thriller</Link>
         <ul>
-          <li>Home</li>
-          <li>Tv Shows</li>
-          <li>Movies</li>
-          <li>New & Popular </li>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/tv-shows">Tv Shows</Link>
+          </li>
+          <li>
+            <Link to="/movies">Movies</Link>
+          </li>
+          <li>
+            <Link to="/new-popular">New & Popular</Link>
+          </li>
           <li>My List</li>
           <li>Browse by Languages</li>
         </ul>
@@ -74,7 +82,7 @@ const Navbar = ({
               )}
               {!searchError &&
                 previewResults.map((movie) => (
-                  <Link to={`/player/${movie.id}`} className="search-dropdown-item" key={movie.id}>
+                  <Link to={`/player/movie/${movie.id}`} className="search-dropdown-item" key={movie.id}>
                     {movie.poster_path ? (
                       <img
                         src={getPosterUrl(movie.poster_path, "w92")}

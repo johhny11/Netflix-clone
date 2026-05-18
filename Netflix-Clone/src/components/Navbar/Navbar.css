@@ -24,14 +24,18 @@
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0;
+  text-decoration: none;
 }
 .navbar-left ul {
   display: flex;
   list-style: none;
   gap: 20px;
 }
-.navbar-left ul li {
+.navbar-left ul li,
+.navbar-left ul a {
+  color: #e5e5e5;
   cursor: pointer;
+  text-decoration: none;
 }
 .navbar-right {
   display: flex;
